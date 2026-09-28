@@ -102,12 +102,56 @@ class Pair<A, B> {
   String toString() => '($first, $second)';
 }
 
+//Part 5(error handling)
+class BookNotFoundException implements Exception {
+  final String title;
+  BookNotFoundException(this.title);
+
+  @override
+  String toString() => 'BookNotFoundException: $title';
+}
+
+class BookNotAvailableException implements Exception {
+  final String title;
+  BookNotAvailableException(this.title);
+
+  @override
+  String toString() => 'BookNotAvailableException: $title';
+}
+
+void checkOut(Map<String, int> stock, String title) {
+  if (!stock.containsKey(title)) {
+    throw BookNotFoundException(title);
+  }
+  if (stock[title]! <= 0) {
+    throw BookNotAvailableException(title);
+  }
+  stock[title] = stock[title]! - 1;
+}
+
+Map<String, dynamic> findBook(String title) {
+  return books.firstWhere((b) => b['title'] == title);
+}
+
+//Part 6(future and async/await)
+Future<String> fetchBookOfTheDay() async {
+  await Future.delayed(Duration(seconds: 1));
+  return 'Dart in Action';
+}
+
+Future<String> fetchBroken() async {
+  await Future.delayed(Duration(milliseconds: 500));
+  throw Exception('Server down');
+}
+
 //main function
 void main() async {
   part1();
   part2();
   part3();
   part4();
+  part5();
+  await part6();
 }
 
 //part 1
@@ -204,3 +248,56 @@ void part4() {
   print(Pair('Dart in Action', 3));
 }
 
+//part 5
+void part5() {
+  print('--- Part 5 ---');
+
+  var stock = buildStock();
+  var titles = ['Dart in Action', 'Flutter Basics', 'Unknown Book'];
+  for (var title in titles) {
+    try {
+      checkOut(stock, title);
+      print('Checked out: $title');
+    } on BookNotAvailableException catch (e) {
+      print('Sorry: "${e.title}" has no copies left');
+    } on BookNotFoundException catch (e) {
+      print('Not found: "${e.title}"');
+    } catch (e) {
+      print('Unexpected: $e');
+    } finally {
+      print('Transaction logged.');
+    }
+  }
+  print('Copies left of Dart in Action: ${stock['Dart in Action']}');
+  try {
+    findBook('Missing');
+  } catch (e) {
+    print('Search failed: no such book');
+  }
+}
+
+//part 6
+Future<void> part6() async {
+  print('--- Part 6 ---');
+  print('Fetching...');
+  var book = await fetchBookOfTheDay();
+  print('Book of the day: $book');
+  try {
+    await fetchBroken();
+  } catch (e) {
+    print('Fetch failed: $e');
+  }
+}
+
+//reflection
+//1. When would you choose fold over reduce?
+//I choose fold because I need a starting value, like 0 for sum as fold works on an empty list, but reduce throws an error.
+
+//2.What does it mean that a closure "captures" a variable? Which variable was captured in makeCounter?
+//It means the inner function remembers a variable from its outer function. In makeCounter, the captured variable is 'count'.
+
+//3.Why must on BookNotAvailableException come before a general catch (e)?
+// Because dart checks in order.If catch comes first, it catches everything and the specific on clause never runs.
+
+//4.Why does forgetting await still compile, but give the wrong result?
+//Without await, we get a future object,not the real value.It still compiles because Future is a valid object,but printing it shows "Instance of '_Future<String>'" instead of the actual value.
