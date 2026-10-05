@@ -3,7 +3,7 @@
 
 const String rollNo = '04072313043';
 
-// ======= Seeded settings (generated from YOUR roll number). Do not edit. =======
+// ====== Seeded settings (generated from YOUR roll number). Do not edit. =====
 final int seed = int.parse(rollNo.substring(rollNo.length - 2));
 final int t = seed ~/ 10; // tens digit
 final int u = seed % 10; // units digit
@@ -55,10 +55,8 @@ class MenuItem {
   @override
   String toString() => '$name (Rs $price)';
 }
-//we cannot declare price as final bcz its value chnage in constructor
-//floor logic did not run in free() bcz free() is a different named constructor with price = 0
 
-// Part 4: OrderLog singleton
+// Part 4: OrderLog
 class OrderLog {
   static OrderLog? _instance;
   final List<String> entries = [];
@@ -71,7 +69,6 @@ class OrderLog {
 
   void add(String msg) => entries.add(msg);
 }
-//_instance and _internal start from underscore bcz they are private
 
 // Part 5 and 6: OrderLine class
 class OrderLine {
@@ -89,8 +86,6 @@ class OrderLine {
   bool get isBigOrder => grand > bigOrderLimit;
   String get label => '${item.name} x$qty';
 }
-//initializer list cannot read another field of the same object bcz the object does not exist yet so I calculate total again from item.price * qty
-//line.grand = 5; fails because grand is a getter. A getter is read-only, we cannot assign a value to it. To make it legal, we would have to add a setter.
 
 // Part 7: StudentCard class
 class StudentCard {
@@ -111,7 +106,6 @@ class StudentCard {
     }
   }
 }
-//setter fixes a bad value so the other option is to throw error when the value is bad
 
 // Part 5: mainOrder function
 OrderLine mainOrder() {
@@ -157,7 +151,7 @@ void step1() {
   print('Step 1: ${item2.name} Rs ${item2.price}');
 }
 
-// Part 2: Constructors and this. shorthand
+//Part 2: Constructors and this. shorthand
 void step2() {
   print('--- Step 2 ---');
   MenuItem a = MenuItem(menu[u], priceOf(u));
@@ -165,8 +159,9 @@ void step2() {
   print('Step 2: ${a.name} Rs ${a.price}');
   print('Step 2: Test Special Rs ${b.price}');
 }
+//Think:we cannot declare price as final bcz its value chnage in constructor
 
-// Part 3: Named Constructors
+//Part 3: Named Constructors
 void step3() {
   print('--- Step 3 ---');
   MenuItem freebie = MenuItem.free('Water');
@@ -176,8 +171,9 @@ void step3() {
   print('Step 3: ${parsed.name} Rs ${parsed.price}');
   print('Step 3: floor=$priceFloor, free price=${freebie.price}');
 }
+//Think:floor logic did not run in free() bcz free() is a different named constructor with price=0
 
-// Part 4: Factory Constructors
+//Part 4:Factory Constructors
 void step4() {
   print('--- Step 4 ---');
   OrderLog log1 = OrderLog();
@@ -194,8 +190,9 @@ void step4() {
   print('Step 4: entries = ${log1.entries.length}');
   print('Step 4: last = ${log2.entries.last}');
 }
+//Think:_instance and _internal start from underscore bcz they are private
 
-// Part 5: Initializer Lists and Assertions
+//Part 5:Initializer Lists and Assertions
 void step5() {
   print('--- Step 5 ---');
   OrderLine line = mainOrder();
@@ -208,8 +205,9 @@ void step5() {
     print('Step 5: assert fired');
   }
 }
+//Think: initializer list cannot read another field of the same object bcz the object does not exist so i calculate total again from item.price * qty
 
-// Part 6: Getters
+//Part 6: Getters
 void step6() {
   print('--- Step 6 ---');
   OrderLine line = mainOrder();
@@ -217,8 +215,9 @@ void step6() {
   print('Step 6: big order? ${line.isBigOrder} (limit $bigOrderLimit)');
   print('Step 6: label=${line.label}');
 }
+//Think:line.grand = 5; fails because grand is a getter getter is readonly, we cannot assign a value to it.To make it legal, we would have to add a setter.
 
-// Part 7: Setters
+//Part 7:Setters
 void step7() {
   print('--- Step 7 ---');
   StudentCard card = StudentCard('$seed');
@@ -231,8 +230,9 @@ void step7() {
   card.balance = card.balance - mainOrder().grand;
   print('Step 7: paid order ->${card.balance}');
 }
+//Think:setter fixes a bad value so the other option is to throw error when the value is bad
 
-// Part 8: A Menu Built from Text
+//Part 8: A Menu Built from Text
 void step8() {
   print('--- Step 8 ---');
   List<MenuItem> items = buildMenu();
@@ -243,12 +243,22 @@ void step8() {
   print('Step 8: sum = $sum');
 }
 
-// Part 9: Building a Receipt
+//Part 9: Building a Receipt
 void step9() {
   print('--- Step 9 ---');
 }
 
-// Part 10: Capstone, Discount Coupons
+//Part 10: Capstone, Discount Coupons
 void step10() {
   print('--- Step 10 ---');
 }
+
+//reflection questions
+//Q1:
+//this saves me from writing the same thing two times so that I do not have to write this.name = name again.
+//Q2:
+//I use a named constructor when I want a different way to make the object and I use a factory constructor when I want to reuse the same object.
+//Q3
+//A constructor body runs after the object is made so that it can change values.An initializer list runs before the object is made,so it sets final values.
+//Q4:
+// I use a getter when I want to compute a value instead of storing it and I use a setter when I want to check a value before saving it.
