@@ -31,16 +31,38 @@ class LibraryItem {
   final String title;
   final int year;
   LibraryItem(this.title, this.year);
+
+  //Task 2.1:describe method
+  String describe() => '$title ($year)';
 }
 
 //Task 1.2:super parameter
 class Book extends LibraryItem {
   final int pages;
   Book(super.title, super.year, this.pages);
+
+  //Task 2.2:override describe
+  @override
+  String describe() => '${super.describe()}, $pages pages';
+}
+
+//Task 2.3:Magazine class
+class Magazine extends LibraryItem {
+  final int issue;
+  Magazine(super.title, super.year, this.issue);
+
+  @override
+  String describe() => '${super.describe()}, issue $issue';
 }
 
 //Task 1.3:top-level ftn
 Book mainBook() => Book(titles[u], yearOf(u), 100 + 3 * seed);
+
+//Task 2.3: mainMagazine ftn
+Magazine mainMagazine() {
+  final i = (u + 1) % 10;
+  return Magazine(titles[i], yearOf(i), 1 + (t + u) % 12);
+}
 
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
@@ -65,11 +87,21 @@ void step1() {
   print('Step 1: runtimeType = ${item.runtimeType}');
   // Think: Why is item.pages a compile error even though the object really has pages?
   // Answer
-  //item is declared as LibraryItem and that class has no pages field.Dart checks the type of the varibale,not the 
+  //item is declared as LibraryItem and that class has no pages field.Dart checks the type of the varibale,not the
  //real type of object,so item.pages is a compile error
 }
 
-void step2() { print('--- Step 2 ---'); }
+void step2() {
+  print('--- Step 2 ---');
+  print('Step 2: ${mainBook().describe()}');
+  print('Step 2: ${mainMagazine().describe()}');
+  // Think: What would happen to the output if you forgot @override and mistyped
+  // the method name as describe()?
+  // Answer
+  //If I forget @override and mistype the name, Then dart creates a NEW method in
+  //the subclass instead of replacing the parent's
+}
+
 void step3() { print('--- Step 3 ---'); }
 void step4() { print('--- Step 4 ---'); }
 void step5() { print('--- Step 5 ---'); }
