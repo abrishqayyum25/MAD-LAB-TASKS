@@ -157,6 +157,19 @@ class Fine {
   String toString() => 'Fine(\$$amount)';
 }
 
+//Step 10:Member class
+class Member {
+  final String name;
+  final MemberType type;
+
+  Member(this.name, this.type);
+
+  Fine feeFor(LibraryItem item, int days) {
+    final fee = LibraryItem.capFee(item.lateFee(days));
+    return Fine(type.applyDiscount(fee));
+  }
+}
+
 //top-level ftn for main book
 Book mainBook() => Book(titles[u], yearOf(u), 100 + 3 * seed);
 
@@ -338,4 +351,21 @@ void step9() {
   //members are read from the class itself,so we do not need an instance
 }
 
-void step10() { print('--- Step 10 ---'); }
+void step10() {
+  print('--- Step 10 ---');
+  final shelf = buildShelf();
+  final member = Member('S$seed', MemberType.values[seed % 3]);
+  final total = shelf.fold<Fine>(
+      const Fine(0), (sum, item) => sum + member.feeFor(item, daysLate));
+  final borrowable = shelf.whereType<Borrowable>().length;
+  final renewable = shelf.whereType<Renewable>().length;
+  print('Step 10: ${shelf.length} items, $borrowable borrowable, $renewable renewable');
+  print('Step 10: ${member.name} (${member.type.name}) owes $total');
+  print('Step 10: over the cap? ${total > Fine(feeCap)}');
+  // Think: One polymorphic loop over a List<LibraryItem> handles Books,
+  // Magazines and Dvds with no if on the type. Why does this work?
+  // Answer
+  //The loop only calls lateFee() on each item,which every subclass has its
+  //own version of.Dart picks the right one at runtime,so no type check is
+  //needed
+}
