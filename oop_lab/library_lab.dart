@@ -39,10 +39,10 @@ abstract class LibraryItem {
   int lateFee(int days);
 }
 
-//Book class (also implements Borrowable for Step 4)
-class Book extends LibraryItem implements Borrowable {
+//Book class (implements Borrowable + Renewable mixin)
+class Book extends LibraryItem with Renewable implements Borrowable {
   final int pages;
-  bool _out = false;   // Step 4: is this book currently out?
+  bool _out = false;
 
   Book(super.title, super.year, this.pages);
 
@@ -52,7 +52,6 @@ class Book extends LibraryItem implements Borrowable {
   @override
   int lateFee(int days) => days * feePerDay;
 
-  //Step 4: Borrowable members
   @override
   bool get isAvailable => !_out;
 
@@ -63,7 +62,7 @@ class Book extends LibraryItem implements Borrowable {
   void giveBack() => _out = false;
 }
 
-//Magazine class
+//Magazine class (no Renewable mixin)
 class Magazine extends LibraryItem {
   final int issue;
   Magazine(super.title, super.year, this.issue);
@@ -75,8 +74,8 @@ class Magazine extends LibraryItem {
   int lateFee(int days) => days * (feePerDay ~/ 2);
 }
 
-//Dvd class
-class Dvd extends LibraryItem {
+//Dvd class (with Renewable mixin)
+class Dvd extends LibraryItem with Renewable {
   final int minutes;
   Dvd(super.title, super.year, this.minutes);
 
@@ -87,11 +86,22 @@ class Dvd extends LibraryItem {
   int lateFee(int days) => days * feePerDay * 2;
 }
 
-//Step 4: Borrowable interface
+//Borrowable interface
 abstract class Borrowable {
   bool get isAvailable;
   void borrow();
   void giveBack();
+}
+
+//Step 5: Renewable mixin
+mixin Renewable {
+  int renewals = 0;
+
+  bool renew(int limit) {
+    if (renewals >= limit) return false;
+    renewals++;
+    return true;
+  }
 }
 
 //top-level ftn for main book
@@ -174,14 +184,31 @@ void step4() {
   for (final item in items) {
     print('Step 4: ${item.runtimeType} borrowable? ${item is Borrowable}');
   }
-  // Think: You wrote all three method bodies yourself. What would extends Borrowable have given you for free, and why is that not what you wanted?
-  // Answer
-  //extends Borrowable would give method bodies for free but Book already
-  //extends LibraryItem (only one parent allowed in Dart) and I wanted only a
-  //contract not the inherited code
+// Think: You wrote all three method bodies yourself. What would extends
+// Borrowable have given you for free, and why is that not what you wanted?
+// Answer
+//extends Borrowable would give method bodies for free but Book already
+//extends LibraryItem (only one parent allowed in Dart) and I wanted only a
+//contract not the inherited code
 }
 
-void step5() { print('--- Step 5 ---'); }
+void step5() {
+  print('--- Step 5 ---');
+  final book = mainBook();
+  var ok = 0;
+  for (var i = 0; i < renewAttempts; i++) {
+    if (book.renew(renewLimit)) ok++;
+  }
+  print('Step 5: renewed $ok of $renewAttempts attempts (limit $renewLimit)');
+  print('Step 5: renew once more? ${book.renew(renewLimit)}');
+  print('Step 5: dvd can renew too? ${mainDvd().renew(1)}');
+  // Think: Book and Dvd need the same renew code but Magazine must not have
+  // it. Why is a mixin a better fit than putting renew in LibraryItem?
+  // Answer
+  //A mixin shares code only with the classes that need it.If renew were in
+  //LibraryItem,Magazine would also get it which is wrong here
+}
+
 void step6() { print('--- Step 6 ---'); }
 void step7() { print('--- Step 7 ---'); }
 void step8() { print('--- Step 8 ---'); }
