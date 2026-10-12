@@ -26,42 +26,68 @@ final int shelfSize = 3 + u % 4;            // items on the shelf in Steps 9-10
 
 //Step 1(Classes and extends)
 
-//Task 1.1:LibraryItem Class
-class LibraryItem {
+//LibraryItem Class (abstract for Step 3)
+abstract class LibraryItem {
   final String title;
   final int year;
   LibraryItem(this.title, this.year);
 
-  //Task 2.1:describe method
+  //describe method
   String describe() => '$title ($year)';
+
+  //abstract late fee
+  int lateFee(int days);
 }
 
-//Task 1.2:super parameter
+//Book class
 class Book extends LibraryItem {
   final int pages;
   Book(super.title, super.year, this.pages);
 
-  //Task 2.2:override describe
   @override
   String describe() => '${super.describe()}, $pages pages';
+
+  @override
+  int lateFee(int days) => days * feePerDay;
 }
 
-//Task 2.3:Magazine class
+//Magazine class
 class Magazine extends LibraryItem {
   final int issue;
   Magazine(super.title, super.year, this.issue);
 
   @override
   String describe() => '${super.describe()}, issue $issue';
+
+  @override
+  int lateFee(int days) => days * (feePerDay ~/ 2);
 }
 
-//Task 1.3:top-level ftn
+//Dvd class
+class Dvd extends LibraryItem {
+  final int minutes;
+  Dvd(super.title, super.year, this.minutes);
+
+  @override
+  String describe() => '${super.describe()}, $minutes min';
+
+  @override
+  int lateFee(int days) => days * feePerDay * 2;
+}
+
+//top-level ftn for main book
 Book mainBook() => Book(titles[u], yearOf(u), 100 + 3 * seed);
 
-//Task 2.3: mainMagazine ftn
+//mainMagazine ftn
 Magazine mainMagazine() {
   final i = (u + 1) % 10;
   return Magazine(titles[i], yearOf(i), 1 + (t + u) % 12);
+}
+
+//mainDvd ftn
+Dvd mainDvd() {
+  final i = (u + 2) % 10;
+  return Dvd(titles[i], yearOf(i), 90 + seed % 40);
 }
 
 void main() {
@@ -102,7 +128,21 @@ void step2() {
   //the subclass instead of replacing the parent's
 }
 
-void step3() { print('--- Step 3 ---'); }
+void step3() {
+  print('--- Step 3 ---');
+  final book = mainBook();
+  final mag = mainMagazine();
+  final dvd = mainDvd();
+  print('Step 3: Book late fee for $daysLate days = ${book.lateFee(daysLate)}');
+  print('Step 3: Magazine late fee for $daysLate days = ${mag.lateFee(daysLate)}');
+  print('Step 3: Dvd late fee for $daysLate days = ${dvd.lateFee(daysLate)}');
+  // Think: Temporarily try LibraryItem('x', 2000). Read the error. Why can
+  // you not create an abstract class directly?
+  // Answer
+  //LibraryItem is abstract so it cannot be instantiated directly.Abstract classes exist only to be extended by concrete subclasses that implement
+  //the abstract members
+}
+
 void step4() { print('--- Step 4 ---'); }
 void step5() { print('--- Step 5 ---'); }
 void step6() { print('--- Step 6 ---'); }
