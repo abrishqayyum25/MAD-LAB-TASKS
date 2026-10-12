@@ -26,17 +26,26 @@ final int shelfSize = 3 + u % 4;            // items on the shelf in Steps 9-10
 
 //Step 1(Classes and extends)
 
-//LibraryItem Class (abstract for Step 3)
+//LibraryItem Class (abstract for Step 3, static for Step 9)
 abstract class LibraryItem {
   final String title;
   final int year;
-  LibraryItem(this.title, this.year);
+
+  //Step 9:static counter
+  static int created = 0;
+
+  LibraryItem(this.title, this.year) {
+    created++;
+  }
 
   //describe method
   String describe() => '$title ($year)';
 
   //abstract late fee
   int lateFee(int days);
+
+  //Step 9:static cap helper
+  static int capFee(int fee) => fee > feeCap ? feeCap : fee;
 }
 
 //Book class (implements Borrowable + Renewable mixin)
@@ -161,6 +170,22 @@ Magazine mainMagazine() {
 Dvd mainDvd() {
   final i = (u + 2) % 10;
   return Dvd(titles[i], yearOf(i), 90 + seed % 40);
+}
+
+//Step 9:buildShelf ftn
+List<LibraryItem> buildShelf() {
+  final shelf = <LibraryItem>[];
+  for (var k = 0; k < shelfSize; k++) {
+    final i = (u + k) % 10;
+    if (k % 3 == 0) {
+      shelf.add(Book(titles[i], yearOf(i), 100 + 3 * seed));
+    } else if (k % 3 == 1) {
+      shelf.add(Magazine(titles[i], yearOf(i), 1 + (t + k) % 12));
+    } else {
+      shelf.add(Dvd(titles[i], yearOf(i), 90 + seed % 40));
+    }
+  }
+  return shelf;
 }
 
 void main() {
@@ -296,5 +321,21 @@ void step8() {
   //hashCode together
 }
 
-void step9() { print('--- Step 9 ---'); }
+void step9() {
+  print('--- Step 9 ---');
+  LibraryItem.created = 0;
+  buildShelf();
+  final shelf = buildShelf();
+  print('Step 9: items created = ${LibraryItem.created}');
+  final capped = LibraryItem.capFee(shelf.first.lateFee(daysBig));
+  print('Step 9: capped fee = $capped <cap $feeCap>');
+  print('Step 9: const copies identical? ${identical(const Fine(10), const Fine(10))}');
+  print('Step 9: new copies identical? ${identical(Fine(10), Fine(10))}');
+  // Think: Why can created be read as LibraryItem.created without making
+  // any object first?
+  // Answer
+  //created is static so it belongs to the class,not to an object.Static
+  //members are read from the class itself,so we do not need an instance
+}
+
 void step10() { print('--- Step 10 ---'); }
