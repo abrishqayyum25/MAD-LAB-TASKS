@@ -39,9 +39,11 @@ abstract class LibraryItem {
   int lateFee(int days);
 }
 
-//Book class
-class Book extends LibraryItem {
+//Book class (also implements Borrowable for Step 4)
+class Book extends LibraryItem implements Borrowable {
   final int pages;
+  bool _out = false;   // Step 4: is this book currently out?
+
   Book(super.title, super.year, this.pages);
 
   @override
@@ -49,6 +51,16 @@ class Book extends LibraryItem {
 
   @override
   int lateFee(int days) => days * feePerDay;
+
+  //Step 4: Borrowable members
+  @override
+  bool get isAvailable => !_out;
+
+  @override
+  void borrow() => _out = true;
+
+  @override
+  void giveBack() => _out = false;
 }
 
 //Magazine class
@@ -73,6 +85,13 @@ class Dvd extends LibraryItem {
 
   @override
   int lateFee(int days) => days * feePerDay * 2;
+}
+
+//Step 4: Borrowable interface
+abstract class Borrowable {
+  bool get isAvailable;
+  void borrow();
+  void giveBack();
 }
 
 //top-level ftn for main book
@@ -143,7 +162,25 @@ void step3() {
   //the abstract members
 }
 
-void step4() { print('--- Step 4 ---'); }
+void step4() {
+  print('--- Step 4 ---');
+  final book = mainBook();
+  print('Step 4: available? ${book.isAvailable}');
+  book.borrow();
+  print('Step 4: after borrow? ${book.isAvailable}');
+  book.giveBack();
+  print('Step 4: after return? ${book.isAvailable}');
+  final items = <LibraryItem>[book, mainMagazine(), mainDvd()];
+  for (final item in items) {
+    print('Step 4: ${item.runtimeType} borrowable? ${item is Borrowable}');
+  }
+  // Think: You wrote all three method bodies yourself. What would extends Borrowable have given you for free, and why is that not what you wanted?
+  // Answer
+  //extends Borrowable would give method bodies for free but Book already
+  //extends LibraryItem (only one parent allowed in Dart) and I wanted only a
+  //contract not the inherited code
+}
+
 void step5() { print('--- Step 5 ---'); }
 void step6() { print('--- Step 6 ---'); }
 void step7() { print('--- Step 7 ---'); }
