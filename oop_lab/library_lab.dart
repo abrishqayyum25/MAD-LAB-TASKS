@@ -117,6 +117,19 @@ enum MemberType {
   int applyDiscount(int fee) => fee - (fee * discountPercent) ~/ 100;
 }
 
+//Step 7:Extensions
+extension MoneyText on int {
+  String get rs => 'Rs $this';
+}
+
+extension Initials on String {
+  String get initials => split(' ').map((w) => w[0]).join();
+}
+
+extension ShelfMath on List<LibraryItem> {
+  int totalLateFee(int days) => fold(0, (sum, i) => sum + i.lateFee(days));
+}
+
 //top-level ftn for main book
 Book mainBook() => Book(titles[u], yearOf(u), 100 + 3 * seed);
 
@@ -235,7 +248,21 @@ void step6() {
   //enum like MemberType.studnet is caught at compile time
 }
 
-void step7() { print('--- Step 7 ---'); }
+void step7() {
+  print('--- Step 7 ---');
+  final type = MemberType.values[seed % 3];
+  final discounted = type.applyDiscount(mainBook().lateFee(daysLate));
+  final shelf = <LibraryItem>[mainBook(), mainMagazine(), mainDvd()];
+  print('Step 7: ${discounted.rs}');
+  print('Step 7: initials of "${titles[u]}" = ${titles[u].initials}');
+  print('Step 7: shelf fee for $daysLate days = ${shelf.totalLateFee(daysLate).rs}');
+  // Think: You could have written plain functions rs(int x). What do you gain
+  // by writing 72.rs instead?
+  // Answer
+   //72.rs is shorter and reads better than rs(72),so the code is cleaner
+
+}
+
 void step8() { print('--- Step 8 ---'); }
 void step9() { print('--- Step 9 ---'); }
 void step10() { print('--- Step 10 ---'); }
