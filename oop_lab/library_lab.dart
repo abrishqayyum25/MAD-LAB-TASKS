@@ -74,7 +74,7 @@ class Magazine extends LibraryItem {
   int lateFee(int days) => days * (feePerDay ~/ 2);
 }
 
-//Dvd class (with Renewable mixin)
+//Dvd class
 class Dvd extends LibraryItem with Renewable {
   final int minutes;
   Dvd(super.title, super.year, this.minutes);
@@ -93,7 +93,7 @@ abstract class Borrowable {
   void giveBack();
 }
 
-//Step 5: Renewable mixin
+//Renewable mixin
 mixin Renewable {
   int renewals = 0;
 
@@ -102,6 +102,19 @@ mixin Renewable {
     renewals++;
     return true;
   }
+}
+
+//Step 6:MemberType enum
+enum MemberType {
+  student(3, 50),
+  faculty(10, 20),
+  guest(1, 0);
+
+  final int maxLoans;
+  final int discountPercent;
+  const MemberType(this.maxLoans, this.discountPercent);
+
+  int applyDiscount(int fee) => fee - (fee * discountPercent) ~/ 100;
 }
 
 //top-level ftn for main book
@@ -209,7 +222,19 @@ void step5() {
   //LibraryItem,Magazine would also get it which is wrong here
 }
 
-void step6() { print('--- Step 6 ---'); }
+void step6() {
+  print('--- Step 6 ---');
+  final type = MemberType.values[seed % 3];
+  final fee = mainBook().lateFee(daysLate);
+  print('Step 6: member type = ${type.name} (index ${type.index})');
+  print('Step 6: max loans = ${type.maxLoans}');
+  print('Step 6: book fee $fee -> ${type.applyDiscount(fee)} after discount');
+  // Think: Why is MemberType.student safer than the string 'student'?
+  // Answer
+//MemberType.student is safer because the compiler checks it.A typing mistake in a String like 'studnet' would compile but fail at runtime,a typo in the
+  //enum like MemberType.studnet is caught at compile time
+}
+
 void step7() { print('--- Step 7 ---'); }
 void step8() { print('--- Step 8 ---'); }
 void step9() { print('--- Step 9 ---'); }
