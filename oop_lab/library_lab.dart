@@ -130,6 +130,24 @@ extension ShelfMath on List<LibraryItem> {
   int totalLateFee(int days) => fold(0, (sum, i) => sum + i.lateFee(days));
 }
 
+//Step 8:Fine class
+class Fine {
+  final int amount;
+  const Fine(this.amount);
+
+  Fine operator +(Fine o) => Fine(amount + o.amount);
+  bool operator >(Fine o) => amount > o.amount;
+
+  @override
+  bool operator ==(Object other) => other is Fine && other.amount == amount;
+
+  @override
+  int get hashCode => amount.hashCode;
+
+  @override
+  String toString() => 'Fine(\$$amount)';
+}
+
 //top-level ftn for main book
 Book mainBook() => Book(titles[u], yearOf(u), 100 + 3 * seed);
 
@@ -260,9 +278,23 @@ void step7() {
   // by writing 72.rs instead?
   // Answer
    //72.rs is shorter and reads better than rs(72),so the code is cleaner
-
 }
 
-void step8() { print('--- Step 8 ---'); }
+void step8() {
+  print('--- Step 8 ---');
+  final f1 = Fine(mainBook().lateFee(daysLate));
+  final f2 = Fine(mainMagazine().lateFee(daysLate));
+  print('Step 8: $f1 + $f2 = ${f1 + f2}');
+  print('Step 8: first bigger? ${f1 > f2}');
+  print('Step 8: equal copies? ${f1 == Fine(f1.amount)}');
+  print('Step 8: set size = ${{f1, Fine(f1.amount), f2}.length}');
+  // Think: Delete your hashCode and run again. What happens to the set size,
+  // and why does Dart expect both == and hashCode together?
+  // Answer
+  //Without hashCode the set size becomes 3 because Dart uses the default
+  //hashCode so equal Fine objects look different.Dart needs both == and
+  //hashCode together
+}
+
 void step9() { print('--- Step 9 ---'); }
 void step10() { print('--- Step 10 ---'); }
