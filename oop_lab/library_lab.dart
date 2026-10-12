@@ -5,23 +5,30 @@ const String rollNo = '04072313043';
 
 // ===== Seeded settings (generated from YOUR roll number). Do not edit. =====
 final int seed = int.parse(rollNo.substring(rollNo.length - 2));
-final int t = seed ~/ 10;   // tens digit
-final int u = seed % 10;    // units digit
+final int t = seed ~/ 10; // tens digit
+final int u = seed % 10; // units digit
 
 const List<String> titles = [
-  'Dart Basics', 'Flutter In Action', 'Data Structures', 'Operating Systems',
-  'Mobile Design', 'Clean Code', 'Algorithms Unlocked', 'Computer Networks',
-  'Database Systems', 'Software Testing',
+  'Dart Basics',
+  'Flutter In Action',
+  'Data Structures',
+  'Operating Systems',
+  'Mobile Design',
+  'Clean Code',
+  'Algorithms Unlocked',
+  'Computer Networks',
+  'Database Systems',
+  'Software Testing',
 ];
 
-int yearOf(int i) => 1995 + 2 * i + t;      // publication year of titles[i]
-final int feePerDay = 5 + t;                // late fee per day, in rupees
-final int daysLate = 3 + (t + u) % 6;       // normal number of days late
-final int daysBig = 10 + u;                 // a long overdue period
-final int feeCap = 150 + 10 * t;            // no single fee may exceed this
-final int renewLimit = 1 + t % 3;           // renewals allowed per item
-final int renewAttempts = 2 + u;            // renewal attempts made in Step 5
-final int shelfSize = 3 + u % 4;            // items on the shelf in Steps 9-10
+int yearOf(int i) => 1995 + 2 * i + t; // publication year of titles[i]
+final int feePerDay = 5 + t; // late fee per day, in rupees
+final int daysLate = 3 + (t + u) % 6; // normal number of days late
+final int daysBig = 10 + u; // a long overdue period
+final int feeCap = 150 + 10 * t; // no single fee may exceed this
+final int renewLimit = 1 + t % 3; // renewals allowed per item
+final int renewAttempts = 2 + u; // renewal attempts made in Step 5
+final int shelfSize = 3 + u % 4; // items on the shelf in Steps 9-10
 // ===========================================================================
 
 //Step 1(Classes and extends)
@@ -225,7 +232,7 @@ void step1() {
   // Think: Why is item.pages a compile error even though the object really has pages?
   // Answer
   //item is declared as LibraryItem and that class has no pages field.Dart checks the type of the varibale,not the
- //real type of object,so item.pages is a compile error
+  //real type of object,so item.pages is a compile error
 }
 
 void step2() {
@@ -245,7 +252,9 @@ void step3() {
   final mag = mainMagazine();
   final dvd = mainDvd();
   print('Step 3: Book late fee for $daysLate days = ${book.lateFee(daysLate)}');
-  print('Step 3: Magazine late fee for $daysLate days = ${mag.lateFee(daysLate)}');
+  print(
+    'Step 3: Magazine late fee for $daysLate days = ${mag.lateFee(daysLate)}',
+  );
   print('Step 3: Dvd late fee for $daysLate days = ${dvd.lateFee(daysLate)}');
   // Think: Temporarily try LibraryItem('x', 2000). Read the error. Why can
   // you not create an abstract class directly?
@@ -266,12 +275,12 @@ void step4() {
   for (final item in items) {
     print('Step 4: ${item.runtimeType} borrowable? ${item is Borrowable}');
   }
-// Think: You wrote all three method bodies yourself. What would extends
-// Borrowable have given you for free, and why is that not what you wanted?
-// Answer
-//extends Borrowable would give method bodies for free but Book already
-//extends LibraryItem (only one parent allowed in Dart) and I wanted only a
-//contract not the inherited code
+  // Think: You wrote all three method bodies yourself. What would extends
+  // Borrowable have given you for free, and why is that not what you wanted?
+  // Answer
+  //extends Borrowable would give method bodies for free but Book already
+  //extends LibraryItem (only one parent allowed in Dart) and I wanted only a
+  //contract not the inherited code
 }
 
 void step5() {
@@ -300,7 +309,7 @@ void step6() {
   print('Step 6: book fee $fee -> ${type.applyDiscount(fee)} after discount');
   // Think: Why is MemberType.student safer than the string 'student'?
   // Answer
-//MemberType.student is safer because the compiler checks it.A typing mistake in a String like 'studnet' would compile but fail at runtime,a typo in the
+  //MemberType.student is safer because the compiler checks it.A typing mistake in a String like 'studnet' would compile but fail at runtime,a typo in the
   //enum like MemberType.studnet is caught at compile time
 }
 
@@ -311,11 +320,13 @@ void step7() {
   final shelf = <LibraryItem>[mainBook(), mainMagazine(), mainDvd()];
   print('Step 7: ${discounted.rs}');
   print('Step 7: initials of "${titles[u]}" = ${titles[u].initials}');
-  print('Step 7: shelf fee for $daysLate days = ${shelf.totalLateFee(daysLate).rs}');
+  print(
+    'Step 7: shelf fee for $daysLate days = ${shelf.totalLateFee(daysLate).rs}',
+  );
   // Think: You could have written plain functions rs(int x). What do you gain
   // by writing 72.rs instead?
   // Answer
-   //72.rs is shorter and reads better than rs(72),so the code is cleaner
+  //72.rs is shorter and reads better than rs(72),so the code is cleaner
 }
 
 void step8() {
@@ -342,7 +353,9 @@ void step9() {
   print('Step 9: items created = ${LibraryItem.created}');
   final capped = LibraryItem.capFee(shelf.first.lateFee(daysBig));
   print('Step 9: capped fee = $capped <cap $feeCap>');
-  print('Step 9: const copies identical? ${identical(const Fine(10), const Fine(10))}');
+  print(
+    'Step 9: const copies identical? ${identical(const Fine(10), const Fine(10))}',
+  );
   print('Step 9: new copies identical? ${identical(Fine(10), Fine(10))}');
   // Think: Why can created be read as LibraryItem.created without making
   // any object first?
@@ -356,10 +369,14 @@ void step10() {
   final shelf = buildShelf();
   final member = Member('S$seed', MemberType.values[seed % 3]);
   final total = shelf.fold<Fine>(
-      const Fine(0), (sum, item) => sum + member.feeFor(item, daysLate));
+    const Fine(0),
+    (sum, item) => sum + member.feeFor(item, daysLate),
+  );
   final borrowable = shelf.whereType<Borrowable>().length;
   final renewable = shelf.whereType<Renewable>().length;
-  print('Step 10: ${shelf.length} items, $borrowable borrowable, $renewable renewable');
+  print(
+    'Step 10: ${shelf.length} items, $borrowable borrowable, $renewable renewable',
+  );
   print('Step 10: ${member.name} (${member.type.name}) owes $total');
   print('Step 10: over the cap? ${total > Fine(feeCap)}');
   // Think: One polymorphic loop over a List<LibraryItem> handles Books,
