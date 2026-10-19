@@ -73,8 +73,10 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             const Tally(),
             const SizedBox(height: 12),
-            // Step 7: BuggyCounter added at the bottom
             const BuggyCounter(),
+            const SizedBox(height: 12),
+            // Step 8: Countdown added below BuggyCounter
+            const Countdown(),
           ],
         ),
       ),
@@ -199,6 +201,46 @@ class _TallyState extends State<Tally> {
         ),
       ],
     );
+  }
+}
+
+// Stateful
+class Countdown extends StatefulWidget {
+  const Countdown({super.key});
+
+  @override
+  State<Countdown> createState() => _CountdownState();
+}
+
+class _CountdownState extends State<Countdown> {
+  late int _left;
+  late Timer _timer;
+
+  // Think (Step 8): If we don't cancel the timer in dispose, it keeps running and tries to call setState on a widget that is no longer on screen. This causes a memory leak and an error.
+
+  @override
+  void initState() {
+    super.initState();
+    _left = startSeconds;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _left--;
+      });
+      if (_left <= 0) timer.cancel();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _left > 0
+        ? Text('Time left: ${_left}s', key: const Key('time-left'))
+        : const Text('Time is up!', key: const Key('time-left'));
   }
 }
 
