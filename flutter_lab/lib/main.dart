@@ -3,25 +3,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-const String studentName = 'YOUR NAME HERE'; // <-- Yahan apna naam likhein
-const String rollNo = '04072313043'; // Aapka roll number
+const String studentName = 'YOUR NAME HERE';
+const String rollNo = '04072313043';
 
 // ===== Seeded settings (generated from YOUR roll number). Do not edit. =====
-final int seed = int.parse(rollNo.substring(rollNo.length - 2)); // 43
-final int t = seed ~/ 10; // 4
-final int u = seed % 10; // 3
+final int seed = int.parse(rollNo.substring(rollNo.length - 2));
+final int t = seed ~/ 10; // tens digit
+final int u = seed % 10; // units digit
 
 const List<String> courses = [
   'Mobile Dev', 'Data Structures', 'Operating Systems', 'Databases',
   'Networks', 'Software Eng', 'AI', 'Web Engineering', 'Graphics', 'Security',
 ];
 
-final String course = courses[u]; // Databases
-final int startCount = 3 + u; // 6
-final int stepSize = 1 + t % 4; // 1
-final int maxCount = 20 + 2 * t; // 28
-final int startSeconds = 5 + (t + u) % 6; // 6
-final int bugStep = 1 + u % 4; // 4
+final String course = courses[u]; // your course name
+final int startCount = 3 + u; // where the tally starts
+final int stepSize = 1 + t % 4; // how much + and - change the tally
+final int maxCount = 20 + 2 * t; // the tally may never go above this
+final int startSeconds = 5 + (t + u) % 6; // where the countdown starts
+final int bugStep = 1 + u % 4; // used by BuggyCounter in Step 7
 // ===========================================================================
 
 // Step 9 writes to this list from initState and dispose.
@@ -35,11 +35,27 @@ class LabApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Step 1 replaces everything below.
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(child: Text('Setup OK: seed $seed (t=$t, u=$u)')),
+    return const MaterialApp(
+      title: 'Study Tracker',
+      home: HomePage(),
+    );
+  }
+}
+
+// Stateless
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  // Think: runApp receives the root widget (LabApp) which sets up the app environment,
+  // while MaterialApp receives "home" as the first screen (HomePage) to display.
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Study Tracker: $course'),
       ),
+      body: const Center(child: Text('Hello')),
     );
   }
 }
