@@ -75,7 +75,6 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             const BuggyCounter(),
             const SizedBox(height: 12),
-            // Step 8: Countdown added below BuggyCounter
             const Countdown(),
           ],
         ),
@@ -215,12 +214,16 @@ class Countdown extends StatefulWidget {
 class _CountdownState extends State<Countdown> {
   late int _left;
   late Timer _timer;
+  int _builds = 0;
 
   // Think (Step 8): If we don't cancel the timer in dispose, it keeps running and tries to call setState on a widget that is no longer on screen. This causes a memory leak and an error.
+
+  // Think (Step 9): It increases by one per second because setState is called once per second. You can print lifecycleLog in a button or on screen to prove dispose ran.
 
   @override
   void initState() {
     super.initState();
+    lifecycleLog.add('initState');
     _left = startSeconds;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -232,15 +235,23 @@ class _CountdownState extends State<Countdown> {
 
   @override
   void dispose() {
+    lifecycleLog.add('dispose');
     _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _left > 0
-        ? Text('Time left: ${_left}s', key: const Key('time-left'))
-        : const Text('Time is up!', key: const Key('time-left'));
+    _builds++;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _left > 0
+            ? Text('Time left: ${_left}s', key: const Key('time-left'))
+            : const Text('Time is up!', key: const Key('time-left')),
+        Text('Builds: $_builds', key: const Key('builds')),
+      ],
+    );
   }
 }
 
