@@ -72,6 +72,9 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Tally(),
+            const SizedBox(height: 12),
+            // Step 7: BuggyCounter added at the bottom
+            const BuggyCounter(),
           ],
         ),
       ),
@@ -210,6 +213,8 @@ class BuggyCounter extends StatefulWidget {
 class _BuggyCounterState extends State<BuggyCounter> {
   int _clicks = 0;
 
+  // Think (Step 7): Before the fix, we tapped 3 times so _clicks was 12 (3 x 4), but the screen still showed 0 because setState was missing. Now, it shows 12 correctly.
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -219,7 +224,9 @@ class _BuggyCounterState extends State<BuggyCounter> {
         ElevatedButton(
           key: const Key('bug-button'),
           onPressed: () {
-            _clicks += bugStep;
+            setState(() {
+              _clicks += bugStep;
+            });
           },
           child: Text('+$bugStep'),
         ),
