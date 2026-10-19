@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-const String studentName = 'YOUR NAME HERE';
+const String studentName = 'Abrish Qayyum';
 const String rollNo = '04072313043';
 
 // ===== Seeded settings (generated from YOUR roll number). Do not edit. =====
@@ -55,7 +55,43 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Study Tracker: $course'),
       ),
-      body: const Center(child: Text('Hello')),
+      // Step 2: HomePage body now uses the StudentCard instead of just "Hello"
+      body: StudentCard(name: studentName, roll: rollNo, course: course),
+    );
+  }
+}
+
+// Stateless
+class StudentCard extends StatelessWidget {
+  final String name;
+  final String roll;
+  final String course;
+
+  const StudentCard({
+    super.key,
+    required this.name,
+    required this.roll,
+    required this.course,
+  });
+
+  // Think: Why are the fields of a StatelessWidget final? What would the compiler say if you removed final?
+  // Answer: The fields are final because a StatelessWidget's data should never change after it is created.
+  // If we remove 'final',the compiler will give an error because Flutter needs widget fields to be read-only (immutable)
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Name: $name', key: const Key('student-name')),
+            Text('Roll no: $roll', key: const Key('student-roll')),
+            Text('Course: $course', key: const Key('student-course')),
+          ],
+        ),
+      ),
     );
   }
 }
