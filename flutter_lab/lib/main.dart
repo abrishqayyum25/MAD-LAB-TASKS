@@ -46,8 +46,7 @@ class LabApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Think: runApp receives the root widget (LabApp) which sets up the app environment,
-  // while MaterialApp receives "home" as the first screen (HomePage) to display.
+  // Think (Step 1): runApp gets the whole app widget. MaterialApp gets "home", which is just the first screen.
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,6 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Study Tracker: $course'),
       ),
-      // Step 3: Body is now scrollable and has a Row with info texts
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -63,6 +61,7 @@ class HomePage extends StatelessWidget {
           children: [
             StudentCard(name: studentName, roll: rollNo, course: course),
             const SizedBox(height: 12),
+            // Think (Step 3): The Text('Max...') is deep in the tree. It is inside Row -> Column -> ScrollView -> Body.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -71,6 +70,8 @@ class HomePage extends StatelessWidget {
                 Text('Max: $maxCount', key: const Key('info-max')),
               ],
             ),
+            const SizedBox(height: 12),
+            GoalBanner(count: startCount, max: maxCount),
           ],
         ),
       ),
@@ -91,9 +92,7 @@ class StudentCard extends StatelessWidget {
     required this.course,
   });
 
-  // Think: Why are the fields of a StatelessWidget final? What would the compiler say if you removed final?
-  // Answer: The fields are final because a StatelessWidget's data should never change after it is created.
-  // If we remove 'final',the compiler will give an error because Flutter needs widget fields to be read-only (immutable)
+  // Think (Step 2): Fields are final so the widget can't change after it's built. If we remove final, compiler gives an error.
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +108,25 @@ class StudentCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Stateless
+class GoalBanner extends StatelessWidget {
+  final int count;
+  final int max;
+
+  const GoalBanner({super.key, required this.count, required this.max});
+
+  // Think (Step 4): GoalBanner doesn't need setState because it doesn't own any data. It just shows what we pass to it.
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = count * 100 ~/ max;
+    return Text(
+      'Progress: $count of $max ($percent%)',
+      key: const Key('progress'),
     );
   }
 }
