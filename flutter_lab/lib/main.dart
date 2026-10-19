@@ -46,7 +46,7 @@ class LabApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Think (Step 1): runApp gets the whole app widget. MaterialApp gets "home", which is just the first screen.
+  // Think (Step 1): runApp receives the whole app widget. MaterialApp receives "home" which is just the first screen.
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
           children: [
             StudentCard(name: studentName, roll: rollNo, course: course),
             const SizedBox(height: 12),
-            // Think (Step 3): The Text('Max...') is deep in the tree. It is inside Row -> Column -> ScrollView -> Body.
+            // Think (Step 3): Drawing from LabApp, Text('Max...') is 8 levels deep (LabApp -> MaterialApp -> HomePage -> Scaffold -> SingleChildScrollView -> Column -> Row -> Text).
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -96,7 +96,7 @@ class StudentCard extends StatelessWidget {
     required this.course,
   });
 
-  // Think (Step 2): Fields are final so the widget can't change after it's built. If we remove final, compiler gives an error.
+  // Think (Step 2): Fields are final so the widget can't change after it's built. If we remove final, the compiler gives an error.
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +146,7 @@ class Tally extends StatefulWidget {
 class _TallyState extends State<Tally> {
   int _count = startCount;
 
-  // Think (Step 5): Tally is just the blueprint (configuration), while _TallyState is the memory that holds the changing data (_count).
+  // Think (Step 5): Tally is just the blueprint, while _TallyState is the memory that holds the changing data (_count).
 
   void _plus() {
     setState(() {
@@ -216,7 +216,7 @@ class _CountdownState extends State<Countdown> {
   late Timer _timer;
   int _builds = 0;
 
-  // Think (Step 8): If we don't cancel the timer in dispose, it keeps running and tries to call setState on a widget that is no longer on screen. This causes a memory leak and an error.
+  // Think (Step 8): If we don't cancel the timer in dispose, it keeps running and tries to call setState on a widget that is no longer on screen.
 
   // Think (Step 9): It increases by one per second because setState is called once per second. You can print lifecycleLog in a button or on screen to prove dispose ran.
 
