@@ -71,7 +71,8 @@ class HomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            GoalBanner(count: startCount, max: maxCount),
+            // Step 5: Tally is added here
+            const Tally(),
           ],
         ),
       ),
@@ -127,6 +128,46 @@ class GoalBanner extends StatelessWidget {
     return Text(
       'Progress: $count of $max ($percent%)',
       key: const Key('progress'),
+    );
+  }
+}
+
+// Stateful
+class Tally extends StatefulWidget {
+  const Tally({super.key});
+
+  @override
+  State<Tally> createState() => _TallyState();
+}
+
+class _TallyState extends State<Tally> {
+  int _count = startCount;
+
+  // Think (Step 5): Tally is just the blueprint (configuration), while _TallyState is the memory that holds the changing data (_count).
+
+  void _plus() {
+    setState(() {
+      _count += stepSize;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Count: $_count', key: const Key('count')),
+        GoalBanner(count: _count, max: maxCount),
+        Row(
+          children: [
+            ElevatedButton(
+              key: const Key('plus'),
+              onPressed: _plus,
+              child: Text('+$stepSize'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
