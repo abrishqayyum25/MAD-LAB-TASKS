@@ -96,7 +96,21 @@ class HomePage extends StatelessWidget {
             const SettingsCard(),
             const SizedBox(height: 12),
             
+            // Step 4: Welcome add kiya
+            const Welcome(),
+            const SizedBox(height: 12),
+            
             const Clock(), // Step 1, 2, 3
+            const SizedBox(height: 12),
+            
+            // Step 4: Tiles add kiye
+            Row(
+              children: [
+                Tile(tileA), 
+                Tile(tileB), 
+                Tile(tileC)
+              ],
+            ),
             const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
@@ -167,7 +181,6 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   late Timer _timer;
   int _seconds = startSec;
-  
   int _builds = 0; // Step 2
 
   @override
@@ -191,27 +204,12 @@ class _ClockState extends State<Clock> {
   @override
   Widget build(BuildContext context) {
     _builds++; // Step 2
-    
-    // Think (Step 1 & 2): 
-    // 1. Why do we start the Timer in initState and not inside build?
-    // 2. Why does Builds go up by one per second and not by two? 
-    // 3. What error would you see in the console if the widget left the screen 
-    //    and _timer.cancel() was missing from dispose?
-    //
-    // Answers:
-    // 1. Timer is started in initState because it runs only once. If we start it 
-    //    in build(), a new timer starts every time the widget rebuilds, making the clock speed up.
-    // 2. Builds goes up by one because setState is called exactly once per second.
-    // 3. If _timer.cancel() was missing, the timer would keep running in the background 
-    //    and try to call setState on a destroyed widget. This causes a 
-    //    "setState() called after dispose()" error in the console.
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Session: $_seconds s', key: const Key('clock')),
         Text('Builds: $_builds', key: const Key('builds')),
-        
         Probe(seconds: _seconds), // Step 3
       ],
     );
@@ -229,14 +227,12 @@ class Probe extends StatelessWidget {
   Widget build(BuildContext context) {
     final above = context.findAncestorWidgetOfExactType<Scaffold>() != null;
 
-    // Think (Step 3): Which of the two, Widget or Element, is "cheap and thrown away" 
-    // and which one keeps the State? Where is the third one, the RenderObject, 
-    // and what is its job?
-    //
-    // Answer: The Widget is cheap and thrown away (rebuilt every time). 
-    // The Element is long-lived and keeps the State. 
-    // The RenderObject is the third one; it does the actual layout and painting 
-    // (drawing) of the screen.
+    // Think (Step 1, 2, 3): Answers
+    // 1. Why start Timer in initState? -> initState runs once. In build(), it would start a new timer every rebuild.
+    // 2. Why does Builds go up by one? -> setState is called exactly once per second.
+    // 3. What error if timer not cancelled? -> "setState() called after dispose()" error.
+    // 4. Widget or Element cheap? -> Widget is cheap and rebuilt. Element stays and keeps State.
+    // 5. RenderObject job? -> It does the actual layout and painting (drawing) on the screen.
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,6 +243,48 @@ class Probe extends StatelessWidget {
         Text('Context belongs to: ${context.widget.runtimeType}', key: const Key('probe-context')),
         Text('Scaffold above me: $above', key: const Key('probe-above')),
       ],
+    );
+  }
+}
+
+// ==========================================
+// STEP 4: WELCOME AND TILE
+// ==========================================
+class Welcome extends StatelessWidget {
+  const Welcome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Welcome, $studentName', key: const Key('welcome')),
+    );
+  }
+}
+
+class Tile extends StatefulWidget {
+  final String label;
+  const Tile(this.label, {super.key});
+
+  @override
+  State<Tile> createState() => _TileState();
+}
+
+class _TileState extends State<Tile> {
+  int taps = 0;
+
+  // Think (Step 4): You built Tile out of an ElevatedButton without writing 
+  // extends ElevatedButton. What is this style called, and why does Flutter prefer it?
+  //
+  // Answer: This style is called "Composition". We build big widgets by combining 
+  // small widgets (like ElevatedButton and Text) instead of inheriting from them. 
+  // Flutter prefers this because it is more flexible, reusable, and avoids the 
+  // problems of deep inheritance chains.
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => setState(() => taps++),
+      child: Text('${widget.label}: $taps'),
     );
   }
 }
