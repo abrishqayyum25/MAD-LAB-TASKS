@@ -113,6 +113,9 @@ class HomePage extends StatelessWidget {
             
             const ShareRow(), // Step 8
             const SizedBox(height: 12),
+            
+            const InfoBox(), // Step 9
+            const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -436,6 +439,34 @@ class ShareRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ==========================================
+// STEP 9: INFO BOX (Container)
+// ==========================================
+class InfoBox extends StatelessWidget {
+  const InfoBox({super.key});
+
+  // Think (Step 9): Which one is inside the border, margin or padding? When would 
+  // you use a plain Padding or SizedBox instead of a Container?
+  // Answer: Padding is inside the border. Margin is outside. We use a plain Padding 
+  // when we only need space inside, and SizedBox when we only need a fixed space 
+  // (gap) between widgets. Container is used when we need decoration (color, border, shape).
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('info-box'),
+      margin: EdgeInsets.all(boxMargin),
+      padding: EdgeInsets.all(boxPad),
+      decoration: BoxDecoration(
+        color: swatches[hue]!.shade100,
+        borderRadius: BorderRadius.circular(boxRadius),
+        border: Border.all(width: boxBorder),
+      ),
+      child: Text('Course: $course', key: const Key('box-text')),
     );
   }
 }
