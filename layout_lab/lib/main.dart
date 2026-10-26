@@ -96,8 +96,7 @@ class HomePage extends StatelessWidget {
             const SettingsCard(),
             const SizedBox(height: 12),
             
-            // Step 1: Clock added
-            const Clock(),
+            const Clock(), // Step 1 & 2
             const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
@@ -156,7 +155,7 @@ class SummaryRow extends StatelessWidget {
 }
 
 // ==========================================
-// STEP 1: THE CLOCK
+// STEP 1 & 2: THE CLOCK (with lifecycle log)
 // ==========================================
 class Clock extends StatefulWidget {
   const Clock({super.key});
@@ -168,17 +167,16 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   late Timer _timer;
   int _seconds = startSec;
+  
+  // Step 2: Build counter
+  int _builds = 0; 
 
   @override
   void initState() {
     super.initState();
     
-    // Think: Why do we start the Timer in initState and not inside build?
-    // What would happen to the speed of the clock if we started it in build?
-    //
-    // Answer: We start the Timer in initState because it runs only once. 
-    // If we start it in build(), a new timer starts every time the widget rebuilds. 
-    // This would make the clock speed up because multiple timers would run at the same time.
+    // Step 2: Record initState in the lifecycle log
+    lifecycleLog.add('initState'); 
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() => _seconds += tick);
@@ -188,12 +186,33 @@ class _ClockState extends State<Clock> {
 
   @override
   void dispose() {
+    // Step 2: Cancel timer and record dispose in the lifecycle log
     _timer.cancel();
+    lifecycleLog.add('dispose');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text('Session: $_seconds s', key: const Key('clock'));
+    // Step 2: Increment build counter on every build
+    _builds++; 
+
+    // Think (Step 2): Why does Builds go up by one per second and not by two? 
+    // What error would you see in the console if the widget left the screen 
+    // and _timer.cancel() was missing from dispose?
+    //
+    // Answer: Builds goes up by one because setState is called exactly once 
+    // per second. If _timer.cancel() was missing, the timer would keep running 
+    // in the background and try to call setState on a destroyed widget. This 
+    // would cause a "setState() called after dispose()" error in the console.
+
+    // Step 2: Return a Column instead of just Text
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Session: $_seconds s', key: const Key('clock')),
+        Text('Builds: $_builds', key: const Key('builds')),
+      ],
+    );
   }
 }
