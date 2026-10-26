@@ -107,6 +107,9 @@ class HomePage extends StatelessWidget {
             
             const InfoPanel(), // Step 6
             const SizedBox(height: 12),
+            
+            const SummaryRow(), // Step 7
+            const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -142,21 +145,34 @@ class SettingsCard extends StatelessWidget {
 class SummaryRow extends StatelessWidget {
   const SummaryRow({super.key});
 
+  // Think (Step 7): Why does wrapping a Text in Expanded make it wrap its words? 
+  // Use the idea "constraints go down, sizes go up" from slide 13.
+  // Answer: Expanded tells the Text to take a specific width (constraints go down). 
+  // The Text then wraps its words to fit inside that width (sizes go up). 
+  // Without Expanded, the Text would try to be as wide as it wants and overflow.
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          'Part A: read the widget tree of the $course board from top to bottom.',
-          key: const Key('sum-a'),
+        // Task 7.2: Fixed by wrapping each Text in Expanded
+        Expanded(
+          child: Text(
+            'Part A: read the widget tree of the $course board from top to bottom.',
+            key: const Key('sum-a'),
+          ),
         ),
-        Text(
-          'Part B: build each box from small widgets and never extend a built-in class.',
-          key: const Key('sum-b'),
+        Expanded(
+          child: Text(
+            'Part B: build each box from small widgets and never extend a built-in class.',
+            key: const Key('sum-b'),
+          ),
         ),
-        Text(
-          'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
-          key: const Key('sum-c'),
+        Expanded(
+          child: Text(
+            'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
+            key: const Key('sum-c'),
+          ),
         ),
       ],
     );
