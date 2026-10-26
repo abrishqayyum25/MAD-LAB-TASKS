@@ -116,6 +116,9 @@ class HomePage extends StatelessWidget {
             
             const InfoBox(), // Step 9
             const SizedBox(height: 12),
+            
+            const StampStack(), // Step 10
+            const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -467,6 +470,45 @@ class InfoBox extends StatelessWidget {
         border: Border.all(width: boxBorder),
       ),
       child: Text('Course: $course', key: const Key('box-text')),
+    );
+  }
+}
+
+// ==========================================
+// STEP 10: STAMP STACK (Stack & Positioned)
+// ==========================================
+class StampStack extends StatelessWidget {
+  const StampStack({super.key});
+
+  // Think (Step 10): What decides the size of the Stack? What happens to the layout 
+  // if the Icons come first and the grey Container last?
+  // Answer: The size of the Stack is decided by its largest non-positioned child. 
+  // If the Icons come first, they are small, so the Stack would be very small. 
+  // The grey Container (which is 300x120) would then be drawn on top but the Stack 
+  // itself would not take up the full space, so the layout would look broken.
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      key: const Key('stack'),
+      children: [
+        Container(
+          key: const Key('layer-base'),
+          width: 300,
+          height: 120,
+          color: Colors.grey.shade300,
+        ),
+        Positioned(
+          top: dotTop,
+          right: dotRight,
+          child: const Icon(Icons.star, key: Key('dot-top')),
+        ),
+        Positioned(
+          bottom: dotBottom,
+          left: dotLeft,
+          child: const Icon(Icons.circle, key: Key('dot-bottom')),
+        ),
+      ],
     );
   }
 }
