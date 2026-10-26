@@ -110,6 +110,9 @@ class HomePage extends StatelessWidget {
             
             const SummaryRow(), // Step 7
             const SizedBox(height: 12),
+            
+            const ShareRow(), // Step 8
+            const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -155,7 +158,6 @@ class SummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Task 7.2: Fixed by wrapping each Text in Expanded
         Expanded(
           child: Text(
             'Part A: read the widget tree of the $course board from top to bottom.',
@@ -388,6 +390,50 @@ class InfoPanel extends StatelessWidget {
             Text('Roll no: $rollNo', key: const Key('col-b')),
             Text('Course: $course', key: const Key('col-c')),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+// ==========================================
+// STEP 8: SHARE ROW (Expanded vs Flexible)
+// ==========================================
+class ShareRow extends StatelessWidget {
+  const ShareRow({super.key});
+
+  // Think (Step 8): What would change on the screen if you swapped Expanded and 
+  // Flexible between the two buttons? Which one is "Flexible with fit: tight"?
+  // Answer: If we swap them, the "Exp" button (now Flexible) would shrink to fit 
+  // its text, and the "Flex" button (now Expanded) would stretch to fill the space. 
+  // "Expanded" is just a Flexible with fit: tight, meaning it is forced to fill 
+  // its allocated space.
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const Key('share-row'),
+      children: [
+        SizedBox(
+          key: const Key('fixed'),
+          width: fixedW,
+          child: ElevatedButton(onPressed: () {}, child: const Text('F')),
+        ),
+        Expanded(
+          flex: flexA,
+          child: ElevatedButton(
+            key: const Key('exp'),
+            onPressed: () {},
+            child: const Text('Exp'),
+          ),
+        ),
+        Flexible(
+          flex: flexB,
+          child: ElevatedButton(
+            key: const Key('flex'),
+            onPressed: () {},
+            child: const Text('Flex'),
+          ),
         ),
       ],
     );
