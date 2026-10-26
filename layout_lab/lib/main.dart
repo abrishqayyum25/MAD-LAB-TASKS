@@ -96,21 +96,13 @@ class HomePage extends StatelessWidget {
             const SettingsCard(),
             const SizedBox(height: 12),
             
-            // Step 4: Welcome add kiya
-            const Welcome(),
+            const Welcome(), // Step 4
             const SizedBox(height: 12),
             
             const Clock(), // Step 1, 2, 3
             const SizedBox(height: 12),
             
-            // Step 4: Tiles add kiye
-            Row(
-              children: [
-                Tile(tileA), 
-                Tile(tileB), 
-                Tile(tileC)
-              ],
-            ),
+            const SwapBoard(), // Step 5
             const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
@@ -188,6 +180,11 @@ class _ClockState extends State<Clock> {
     super.initState();
     lifecycleLog.add('initState'); // Step 2
     
+    // Think (Step 1): Why do we start the Timer in initState and not inside build? 
+    // What would happen to the speed of the clock if we started it in build?
+    // Answer: initState runs once. build() runs many times. If we start the timer 
+    // in build, multiple timers will run at the same time, making the clock speed up.
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() => _seconds += tick);
       if (_seconds >= stopAt) timer.cancel(); // stop at your limit
@@ -204,6 +201,13 @@ class _ClockState extends State<Clock> {
   @override
   Widget build(BuildContext context) {
     _builds++; // Step 2
+
+    // Think (Step 2): Why does Builds go up by one per second and not by two? 
+    // What error would you see in the console if the widget left the screen 
+    // and _timer.cancel() was missing from dispose?
+    // Answer: setState runs once per second, so build runs once per second. 
+    // Without _timer.cancel(), the timer keeps running after the widget is gone. 
+    // This causes a "setState() called after dispose()" error.
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,12 +231,11 @@ class Probe extends StatelessWidget {
   Widget build(BuildContext context) {
     final above = context.findAncestorWidgetOfExactType<Scaffold>() != null;
 
-    // Think (Step 1, 2, 3): Answers
-    // 1. Why start Timer in initState? -> initState runs once. In build(), it would start a new timer every rebuild.
-    // 2. Why does Builds go up by one? -> setState is called exactly once per second.
-    // 3. What error if timer not cancelled? -> "setState() called after dispose()" error.
-    // 4. Widget or Element cheap? -> Widget is cheap and rebuilt. Element stays and keeps State.
-    // 5. RenderObject job? -> It does the actual layout and painting (drawing) on the screen.
+    // Think (Step 3): Which of the two, Widget or Element, is "cheap and thrown away" 
+    // and which one keeps the State? Where is the third one, the RenderObject, 
+    // and what is its job?
+    // Answer: Widget is cheap and thrown away (rebuilt every time). Element keeps the State. 
+    // RenderObject is the third one; its job is to draw (paint) and layout the screen.
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,17 +277,55 @@ class _TileState extends State<Tile> {
 
   // Think (Step 4): You built Tile out of an ElevatedButton without writing 
   // extends ElevatedButton. What is this style called, and why does Flutter prefer it?
-  //
-  // Answer: This style is called "Composition". We build big widgets by combining 
-  // small widgets (like ElevatedButton and Text) instead of inheriting from them. 
-  // Flutter prefers this because it is more flexible, reusable, and avoids the 
-  // problems of deep inheritance chains.
+  // Answer: This style is called "Composition". Flutter prefers it because it is 
+  // more flexible and easier to reuse than inheritance.
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () => setState(() => taps++),
       child: Text('${widget.label}: $taps'),
+    );
+  }
+}
+
+// ==========================================
+// STEP 5: SWAPBOARD (Keys)
+// ==========================================
+class SwapBoard extends StatefulWidget {
+  const SwapBoard({super.key});
+
+  @override
+  State<SwapBoard> createState() => _SwapBoardState();
+}
+
+class _SwapBoardState extends State<SwapBoard> {
+  var tiles = [
+    Tile(tileA, key: ValueKey(tileA)),
+    Tile(tileB, key: ValueKey(tileB)),
+    Tile(tileC, key: ValueKey(tileC)),
+  ];
+
+  void swap() => setState(() => tiles = tiles.reversed.toList());
+
+  // Think (Step 5): Without keys, why did the number stay at the left even though the 
+  // label moved? Use the words widget, Element and State in your answer.
+  // Answer: Without keys, Flutter matches the new Widget to the old Element by its position. 
+  // So the Element and State (the number) stay on the left, even though the label in the 
+  // Widget changed.
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(children: tiles),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          key: const Key('swap'),
+          onPressed: swap,
+          child: const Text('Swap'),
+        ),
+      ],
     );
   }
 }
