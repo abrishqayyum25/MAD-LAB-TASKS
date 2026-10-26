@@ -104,6 +104,9 @@ class HomePage extends StatelessWidget {
             
             const SwapBoard(), // Step 5
             const SizedBox(height: 12),
+            
+            const InfoPanel(), // Step 6
+            const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -324,6 +327,51 @@ class _SwapBoardState extends State<SwapBoard> {
           key: const Key('swap'),
           onPressed: swap,
           child: const Text('Swap'),
+        ),
+      ],
+    );
+  }
+}
+
+// ==========================================
+// STEP 6: INFO PANEL (Row and Column Axes)
+// ==========================================
+class InfoPanel extends StatelessWidget {
+  const InfoPanel({super.key});
+
+  // Think (Step 6): In a Column, which axis is the main axis? Why does 
+  // crossAxisAlignment: CrossAxisAlignment.center in a Column move the children 
+  // left or right and not up or down?
+  // Answer: In a Column, the main axis is vertical (up/down) and the cross axis is 
+  // horizontal (left/right). crossAxisAlignment works on the cross axis, so it moves 
+  // the children left or right.
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Row (Main axis is horizontal)
+        Row(
+          key: const Key('info-row'),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Aapki setting
+          children: [
+            Text('Start: $startSec s', key: const Key('row-a')),
+            Text('Tick: $tick s', key: const Key('row-b')),
+            Text('Stop: $stopAt s', key: const Key('row-c')),
+          ],
+        ),
+        const SizedBox(height: 12),
+        
+        // Inner Column (Main axis is vertical)
+        Column(
+          key: const Key('info-col'),
+          crossAxisAlignment: CrossAxisAlignment.center, // Aapki setting
+          children: [
+            Text('Name: $studentName', key: const Key('col-a')),
+            Text('Roll no: $rollNo', key: const Key('col-b')),
+            Text('Course: $course', key: const Key('col-c')),
+          ],
         ),
       ],
     );
