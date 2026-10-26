@@ -96,7 +96,7 @@ class HomePage extends StatelessWidget {
             const SettingsCard(),
             const SizedBox(height: 12),
             
-            const Clock(), // Step 1 & 2
+            const Clock(), // Step 1, 2, 3
             const SizedBox(height: 12),
 
             // Add each new widget BELOW the previous one, in the order the
@@ -155,7 +155,7 @@ class SummaryRow extends StatelessWidget {
 }
 
 // ==========================================
-// STEP 1 & 2: THE CLOCK (with lifecycle log)
+// STEP 1 & 2: THE CLOCK
 // ==========================================
 class Clock extends StatefulWidget {
   const Clock({super.key});
@@ -168,15 +168,12 @@ class _ClockState extends State<Clock> {
   late Timer _timer;
   int _seconds = startSec;
   
-  // Step 2: Build counter
-  int _builds = 0; 
+  int _builds = 0; // Step 2
 
   @override
   void initState() {
     super.initState();
-    
-    // Step 2: Record initState in the lifecycle log
-    lifecycleLog.add('initState'); 
+    lifecycleLog.add('initState'); // Step 2
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() => _seconds += tick);
@@ -186,32 +183,69 @@ class _ClockState extends State<Clock> {
 
   @override
   void dispose() {
-    // Step 2: Cancel timer and record dispose in the lifecycle log
-    _timer.cancel();
-    lifecycleLog.add('dispose');
+    _timer.cancel(); // Step 2
+    lifecycleLog.add('dispose'); // Step 2
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Step 2: Increment build counter on every build
-    _builds++; 
-
-    // Think (Step 2): Why does Builds go up by one per second and not by two? 
-    // What error would you see in the console if the widget left the screen 
-    // and _timer.cancel() was missing from dispose?
+    _builds++; // Step 2
+    
+    // Think (Step 1 & 2): 
+    // 1. Why do we start the Timer in initState and not inside build?
+    // 2. Why does Builds go up by one per second and not by two? 
+    // 3. What error would you see in the console if the widget left the screen 
+    //    and _timer.cancel() was missing from dispose?
     //
-    // Answer: Builds goes up by one because setState is called exactly once 
-    // per second. If _timer.cancel() was missing, the timer would keep running 
-    // in the background and try to call setState on a destroyed widget. This 
-    // would cause a "setState() called after dispose()" error in the console.
+    // Answers:
+    // 1. Timer is started in initState because it runs only once. If we start it 
+    //    in build(), a new timer starts every time the widget rebuilds, making the clock speed up.
+    // 2. Builds goes up by one because setState is called exactly once per second.
+    // 3. If _timer.cancel() was missing, the timer would keep running in the background 
+    //    and try to call setState on a destroyed widget. This causes a 
+    //    "setState() called after dispose()" error in the console.
 
-    // Step 2: Return a Column instead of just Text
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Session: $_seconds s', key: const Key('clock')),
         Text('Builds: $_builds', key: const Key('builds')),
+        
+        Probe(seconds: _seconds), // Step 3
+      ],
+    );
+  }
+}
+
+// ==========================================
+// STEP 3: THE PROBE (BuildContext)
+// ==========================================
+class Probe extends StatelessWidget {
+  final int seconds;
+  const Probe({super.key, required this.seconds});
+
+  @override
+  Widget build(BuildContext context) {
+    final above = context.findAncestorWidgetOfExactType<Scaffold>() != null;
+
+    // Think (Step 3): Which of the two, Widget or Element, is "cheap and thrown away" 
+    // and which one keeps the State? Where is the third one, the RenderObject, 
+    // and what is its job?
+    //
+    // Answer: The Widget is cheap and thrown away (rebuilt every time). 
+    // The Element is long-lived and keeps the State. 
+    // The RenderObject is the third one; it does the actual layout and painting 
+    // (drawing) of the screen.
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Seen at: $seconds s', key: const Key('probe-seen')),
+        Text('Widget #${identityHashCode(this)}', key: const Key('probe-widget')),
+        Text('Element #${identityHashCode(context)}', key: const Key('probe-element')),
+        Text('Context belongs to: ${context.widget.runtimeType}', key: const Key('probe-context')),
+        Text('Scaffold above me: $above', key: const Key('probe-above')),
       ],
     );
   }
